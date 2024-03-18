@@ -29,7 +29,11 @@ function execute() {
 
         // - Process Fields and send event once all fields are collected.
         if (processedFrames === 2) {
-          console.log(sortAlphabetically(fields));
+          fields = sortAlphabetically(fields);
+
+          document.dispatchEvent(
+            new CustomEvent("frames:loaded", { detail: { fields } })
+          );
         }
       });
     } else if (!isTopFrame()) {
