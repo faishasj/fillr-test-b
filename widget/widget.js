@@ -7,6 +7,7 @@
 function execute() {
   try {
     // Step 1 Scrape Fields and Create Fields list object.
+    var processedFrames = 0;
 
     // Map over all labels in frame to create fields list
     var fields = Array.from(document.getElementsByTagName("label")).map(
@@ -17,15 +18,19 @@ function execute() {
         return { [field.name]: label.innerText };
       }
     );
-    console.log(fields);
 
     // Step 2 Add Listener for Top Frame to Receive Fields.
 
     if (isTopFrame()) {
       window.addEventListener("message", (event) => {
-        console.log(event.data);
         // - Merge fields from frames.
+        fields = [...fields, ...event.data];
+        processedFrames += 1;
+
         // - Process Fields and send event once all fields are collected.
+        if (processedFrames === 2) {
+          console.log(sortAlphabetically(fields));
+        }
       });
     } else if (!isTopFrame()) {
       // Child frames sends Fields up to Top Frame.
@@ -37,6 +42,18 @@ function execute() {
 }
 
 execute();
+
+// Sort a list of objects by key alphabetically
+function sortAlphabetically(fields) {
+  return fields.sort((a, b) => {
+    const aKey = Object.keys(a)[0];
+    const bKey = Object.keys(b)[0];
+
+    if (aKey > bKey) return 1;
+    if (aKey < bKey) return -1;
+    return 0;
+  });
+}
 
 // Utility functions to check and get the top frame
 // as Karma test framework changes top & context frames.
