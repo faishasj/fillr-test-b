@@ -5,8 +5,13 @@
 // Function that runs on each frame.
 function execute() {
   try {
-    // Number of frames processed
-    var processedFrames = 0;
+    // Number of frames processed - not including top frame
+    var numProcessedFrames = 0;
+
+    // Number of child frames within current frame
+    var numChildFrames = Array.from(
+      document.getElementsByTagName("iframe")
+    ).length;
 
     // Map over all labels in frame to create fields list
     var fields = Array.from(document.getElementsByTagName("label")).map(
@@ -22,11 +27,14 @@ function execute() {
     if (isTopFrame()) {
       window.addEventListener("message", (event) => {
         // Merge fields from frames.
-        fields = [...fields, ...event.data];
-        processedFrames += 1;
+        fields = [...fields, ...event.data.fields];
+        numProcessedFrames += 1;
 
-        // Once fields have been received from all fields...
-        if (processedFrames === 2) {
+        // Add on number of child frames of the child frame to the top frame.
+        numChildFrames += event.data.numChildFrames;
+
+        // Once fields have been received from all child frames
+        if (numProcessedFrames === numChildFrames) {
           // Sort fields by name alphabetically ascending
           fields = sortAlphabetically(fields);
 
@@ -37,8 +45,8 @@ function execute() {
         }
       });
     } else if (!isTopFrame()) {
-      // Child frames sends Fields up to Top Frame.
-      getTopFrame().postMessage(fields, "*");
+      // Child frames sends Fields and number of child frames up to Top Frame.
+      getTopFrame().postMessage({ fields, numChildFrames }, "*");
     }
   } catch (e) {
     console.error(e);
