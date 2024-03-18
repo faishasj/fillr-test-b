@@ -1,12 +1,11 @@
 "use strict";
-// Write your module here
-// It must send an event "frames:loaded" from the top frame containing a list of { name:label } pairs,
+// Module that sends an event "frames:loaded" from the top frame containing a list of { name:label } pairs,
 // which describes all the fields in each frame.
 
-// This is a template to help you get started, feel free to make your own solution.
+// Function that runs on each frame.
 function execute() {
   try {
-    // Step 1 Scrape Fields and Create Fields list object.
+    // Number of frames processed
     var processedFrames = 0;
 
     // Map over all labels in frame to create fields list
@@ -19,18 +18,19 @@ function execute() {
       }
     );
 
-    // Step 2 Add Listener for Top Frame to Receive Fields.
-
+    // Add Listener for Top Frame to Receive Fields.
     if (isTopFrame()) {
       window.addEventListener("message", (event) => {
-        // - Merge fields from frames.
+        // Merge fields from frames.
         fields = [...fields, ...event.data];
         processedFrames += 1;
 
-        // - Process Fields and send event once all fields are collected.
+        // Once fields have been received from all fields...
         if (processedFrames === 2) {
+          // Sort fields by name alphabetically ascending
           fields = sortAlphabetically(fields);
 
+          // Dispatch frames:loaded event with fields in detail
           document.dispatchEvent(
             new CustomEvent("frames:loaded", { detail: { fields } })
           );
