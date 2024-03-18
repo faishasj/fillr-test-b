@@ -20,3 +20,8 @@ Notes:
 ## Submission
 
 Please submit your code test in a public Github repo and notify mujtaba.hussain@rakuten.com when you are complete!
+
+## Assumptions made
+
+- Where there is a label, there is exactly one corresponding field (input, select, etc.) where it's ID is equal to the label's "for" attribute
+- Label returned is innerText instead of innerHTML
