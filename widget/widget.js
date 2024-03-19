@@ -9,9 +9,7 @@ function execute() {
     var numProcessedFrames = 0;
 
     // Number of child frames within current frame
-    var numChildFrames = Array.from(
-      document.getElementsByTagName("iframe")
-    ).length;
+    var numChildFrames = document.getElementsByTagName("iframe").length;
 
     // Map over all labels in frame to create fields list
     var fields = Array.from(document.getElementsByTagName("label")).map(
